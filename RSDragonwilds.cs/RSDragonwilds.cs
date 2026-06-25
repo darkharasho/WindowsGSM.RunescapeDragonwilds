@@ -17,7 +17,7 @@ namespace WindowsGSM.Plugins
             name = "WindowsGSM.RSDragonwilds", // WindowsGSM.XXXX
             author = "darkharasho",
             description = "WindowsGSM plugin for supporting RuneScape: Dragonwilds Dedicated Server",
-            version = "0.1.1",
+            version = "1.0.0",
             url = "https://github.com/darkharasho/WindowsGSM.RunescapeDragonwilds", // Github repository link (Best practice)
             color = "#8B0000" // Color Hex
         };
