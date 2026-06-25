@@ -20,7 +20,7 @@
 | Setting | Value |
 | --- | --- |
 | Steam App ID | `4019830` |
-| Start file | `RSDragonwilds.exe` |
+| Start file | `RSDragonwilds\Binaries\Win64\RSDragonwildsServer-Win64-Shipping.exe` |
 | Default game port | `7777/UDP` |
 | Max players | `6` (hard cap enforced by the game) |
 | Default launch args | `-log` |

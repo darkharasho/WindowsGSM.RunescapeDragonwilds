@@ -17,7 +17,7 @@ namespace WindowsGSM.Plugins
             name = "WindowsGSM.RSDragonwilds", // WindowsGSM.XXXX
             author = "darkharasho",
             description = "WindowsGSM plugin for supporting RuneScape: Dragonwilds Dedicated Server",
-            version = "0.1.0",
+            version = "0.1.1",
             url = "https://github.com/darkharasho/WindowsGSM.RunescapeDragonwilds", // Github repository link (Best practice)
             color = "#8B0000" // Color Hex
         };
@@ -32,7 +32,9 @@ namespace WindowsGSM.Plugins
         public override string AppId => "4019830"; /* https://dragonwilds.runescape.wiki/w/Dedicated_Servers */
 
         // - Game server Fixed variables
-        public override string StartPath => "RSDragonwilds.exe"; // Game server start path (launcher in the install root)
+        // Point directly at the Unreal shipping binary (not the small RSDragonwildsServer.exe stub in the
+        // install root) so WindowsGSM tracks the real server process instead of a launcher that exits immediately.
+        public override string StartPath => @"RSDragonwilds\Binaries\Win64\RSDragonwildsServer-Win64-Shipping.exe"; // Game server start path
         public string FullName = "RuneScape: Dragonwilds Dedicated Server"; // Game server FullName
         public bool AllowsEmbedConsole = true;  // Does this server support output redirect?
         public int PortIncrements = 1; // This tells WindowsGSM how many ports should skip after installation (7777 -> 7778)
@@ -149,15 +151,8 @@ namespace WindowsGSM.Plugins
         {
             await Task.Run(() =>
             {
-                if (AllowsEmbedConsole)
-                {
-                    p.StandardInput.WriteLine("\x3"); // Send Ctrl-C to the redirected console
-                }
-                else
-                {
-                    Functions.ServerConsole.SetMainWindow(p.MainWindowHandle);
-                    Functions.ServerConsole.SendWaitToMainWindow("^c");
-                }
+                Functions.ServerConsole.SetMainWindow(p.MainWindowHandle);
+                Functions.ServerConsole.SendWaitToMainWindow("^c");
             });
             await Task.Delay(2000);
         }
