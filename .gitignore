@@ -6,3 +6,10 @@ dist
 build
 *.log
 .superpowers
+
+# C# / Visual Studio build artifacts
+bin/
+obj/
+*.user
+*.suo
+.vs/

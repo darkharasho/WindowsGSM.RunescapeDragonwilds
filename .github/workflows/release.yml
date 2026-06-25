@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v1.0.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify plugin version matches tag
+        run: |
+          FILE_VERSION=$(grep -oP 'version\s*=\s*"\K[^"]+' RSDragonwilds.cs/RSDragonwilds.cs | head -n1)
+          echo "Plugin version: $FILE_VERSION | Tag version: ${{ steps.version.outputs.version }}"
+          if [ "$FILE_VERSION" != "${{ steps.version.outputs.version }}" ]; then
+            echo "::warning::Plugin version ($FILE_VERSION) does not match release tag (${{ steps.version.outputs.version }})."
+          fi
+
+      - name: Create plugin zip
+        run: |
+          # Zip the plugin folder so it can be extracted straight into WindowsGSM's plugins directory.
+          zip -r "WindowsGSM.RSDragonwilds.zip" "RSDragonwilds.cs" README.md LICENSE
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            "WindowsGSM.RSDragonwilds.zip" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --generate-notes
